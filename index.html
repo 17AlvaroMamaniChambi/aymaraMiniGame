@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aymara Games - Aprende Vocabulario</title>
+    <style>
+        :root {
+            --primary: #8a2be2;
+            --secondary: #4b0082;
+            --accent: #00ff88;
+            --dark: #1a1a2e;
+            --light: #f0f0f5;
+            --danger: #ff3860;
+            --success: #23d160;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--dark);
+            color: var(--light);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(138, 43, 226, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(75, 0, 130, 0.1) 0%, transparent 20%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--primary);
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, var(--accent), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
+        }
+        
+        .subtitle {
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+        
+        .menu {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .menu-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 10px;
+            color: white;
+            padding: 15px 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .menu-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .menu-btn:active {
+            transform: translateY(0);
+        }
+        
+        .menu-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(255,255,255,0.1), transparent);
+            pointer-events: none;
+        }
+        
+        .game-container {
+            background: rgba(30, 30, 46, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+        
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(138, 43, 226, 0.3);
+        }
+        
+        .game-title {
+            font-size: 1.8rem;
+            color: var(--accent);
+        }
+        
+        .score-container {
+            display: flex;
+            gap: 20px;
+            font-size: 1.2rem;
+        }
+        
+        .game-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .question-container {
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(138, 43, 226, 0.1);
+            border-radius: 10px;
+            width: 100%;
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            width: 100%;
+        }
+        
+        .option-btn {
+            background: rgba(75, 0, 130, 0.5);
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            color: white;
+            padding: 15px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .option-btn:hover {
+            background: rgba(138, 43, 226, 0.3);
+            transform: scale(1.03);
+        }
+        
+        .option-btn.correct {
+            background: var(--success);
+            border-color: var(--success);
+        }
+        
+        .option-btn.incorrect {
+            background: var(--danger);
+            border-color: var(--danger);
+        }
+        
+        .image-container {
+            width: 200px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .feedback {
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            border-radius: 10px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .feedback.correct {
+            background: rgba(35, 209, 96, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+        
+        .feedback.incorrect {
+            background: rgba(255, 56, 96, 0.2);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+        
+        .next-btn {
+            background: var(--accent);
+            border: none;
+            border-radius: 10px;
+            color: var(--dark);
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            display: none;
+        }
+        
+        .next-btn:hover {
+            background: #00cc77;
+            transform: translateY(-3px);
+        }
+        
+        .results-container {
+            text-align: center;
+            display: none;
+        }
+        
+        .results-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+        
+        .final-score {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+        }
+        
+        .restart-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 10px;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .restart-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .home-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 10px;
+            color: white;
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+        
+        .home-btn:hover {
+            background: rgba(138, 43, 226, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .menu {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .menu-btn {
+                width: 80%;
+            }
+            
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AYMARA GAMES</h1>
+            <p class="subtitle">Aprende vocabulario en Aymara de forma divertida</p>
+        </header>
+        
+        <div class="menu" id="mainMenu">
+            <button class="menu-btn" data-game="animales">🐾 Animales</button>
+            <button class="menu-btn" data-game="objetos">🖥️ Objetos</button>
+            <button class="menu-btn" data-game="plantas">🌿 Plantas</button>
+            <button class="menu-btn" data-game="colores">🎨 Colores</button>
+        </div>
+        
+        <div class="game-container" id="gameContainer">
+            <div class="game-header">
+                <h2 class="game-title" id="gameTitle">Juego</h2>
+                <div class="score-container">
+                    <div>Puntos: <span id="score">0</span></div>
+                    <div>Pregunta: <span id="questionCount">0</span>/10</div>
+                </div>
+            </div>
+            
+            <div class="game-content">
+                <div class="image-container" id="imageContainer">
+                    <!-- Imagen se insertará aquí para animales y objetos -->
+                </div>
+                
+                <div class="question-container" id="questionContainer">
+                    <!-- La pregunta se insertará aquí -->
+                </div>
+                
+                <div class="options-container" id="optionsContainer">
+                    <!-- Las opciones se insertarán aquí -->
+                </div>
+                
+                <div class="feedback" id="feedback">
+                    <!-- Feedback se mostrará aquí -->
+                </div>
+                
+                <button class="next-btn" id="nextBtn">Siguiente</button>
+            </div>
+            
+            <div class="results-container" id="resultsContainer">
+                <h2 class="results-title">¡Juego Terminado!</h2>
+                <div class="final-score" id="finalScore">Puntuación final: 0/10</div>
+                <button class="restart-btn" id="restartBtn">Jugar de nuevo</button>
+                <button class="home-btn" id="homeBtn">Volver al menú</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Datos del juego
+        const gameData = {
+            animales: [
+                { es: "Vicuña", correcta: "WARI", incorrecta: "VARI" },
+                { es: "Alpaca", correcta: "ALPACHU", incorrecta: "ALPAQA" },
+                { es: "Cóndor", correcta: "MALLKU", incorrecta: "MALLQU" },
+                { es: "Llama", correcta: "QARWA", incorrecta: "QHARWA" },
+                { es: "Oso Andino", correcta: "JUKUMARI", incorrecta: "JUQHUMARI" },
+                { es: "Burro", correcta: "QAQILU", incorrecta: "KAQILU" },
+                { es: "Zorrino", correcta: "AÑATHUYA", incorrecta: "ANATHUYA" },
+                { es: "Zorro", correcta: "TIWULA", incorrecta: "TIWLA" },
+                { es: "Flamenco", correcta: "PARIWANA", incorrecta: "PARIHUANA" },
+                { es: "Rana", correcta: "JAMP'ATU", incorrecta: "JAMPATU" },
+                { es: "Gato", correcta: "PHISI", incorrecta: "PHH'ISI" },
+                { es: "Gallina", correcta: "WALLPA", incorrecta: "VALLPA" },
+                { es: "Mosca", correcta: "CHHICHHILLANKHA", incorrecta: "CHICHILLANKA" },
+                { es: "Oveja", correcta: "IWIJA", incorrecta: "UWIJA" },
+                { es: "Paloma", correcta: "URPILA", incorrecta: "URPHILA" }
+            ],
+            objetos: [
+                { es: "Silla", correcta: "QUNUÑA", incorrecta: "KUNUÑA" },
+                { es: "Computadora", correcta: "ATAMIRI", incorrecta: "ATHAMIRI" },
+                { es: "Celular", correcta: "CHILILIRI", incorrecta: "CHILIRI" },
+                { es: "Libros", correcta: "PANKA", incorrecta: "PANQA" },
+                { es: "Bolígrafo", correcta: "QILLQAÑA", incorrecta: "QILQAÑA" },
+                { es: "Cuchara", correcta: "WISLLA", incorrecta: "WISLLA" },
+                { es: "Plato", correcta: "CHUWA", incorrecta: "CH'UWA" },
+                { es: "Olla", correcta: "PHUQHU", incorrecta: "PUQHU" },
+                { es: "Ventana", correcta: "THUXU", incorrecta: "THUXSU" },
+                { es: "Puerta", correcta: "PUNKU", incorrecta: "PUNQU" },
+                { es: "Diccionario", correcta: "ARU PIRWA", incorrecta: "ARU PIWRA" },
+                { es: "Vaso", correcta: "QIRU", incorrecta: "QHIRU" },
+                { es: "Almohada", correcta: "CH'IJMA", incorrecta: "CHHIXAM" }
+            ],
+            plantas: [
+                { correcta: "WIRAWIRA", incorrectas: ["WIRAVIRA", "UIRA UIRA"] },
+                { correcta: "CH'ILLQHA", incorrectas: ["CH'ILKA", "SHILKA"] },
+                { correcta: "SIWINQA", incorrectas: ["SIWINKHA", "CIGUINCA"] },
+                { correcta: "T'ULA", incorrectas: ["TULA", "PULA"] },
+                { correcta: "ITAPALLU", incorrectas: ["HITAPALLU", "ILLATAPU"] },
+                { correcta: "LAPHI", incorrectas: ["LAPPI", "LAPHHI"] },
+                { correcta: "JATHA", incorrectas: ["JATA", "HATA"] },
+                { correcta: "JUPHA", incorrectas: ["JUTA", "JUPHHA"] },
+                { correcta: "THULU", incorrectas: ["THULLU", "TULU"] },
+                { correcta: "SAPHI", incorrectas: ["SAPI", "SAP'I"] },
+                { correcta: "Q'UWA", incorrectas: ["QUWA", "KUA"] },
+                { correcta: "MALWASA", incorrectas: ["MALWASU", "NALWASO"] }
+            ],
+            colores: [
+                { correcta: "WILA", incorrectas: ["VILA", "UILA"] },
+                { correcta: "CH'IYARA", incorrectas: ["CHIYARA", "SHIARA"] },
+                { correcta: "JANQ'U", incorrectas: ["JANK'U", "WANKU"] },
+                { correcta: "SAJUNA", incorrectas: ["ZAJUNA", "CHAJUNA"] },
+                { correcta: "Q'ILLU", incorrectas: ["K'ILLU", "JILLU"] },
+                { correcta: "LARAMA", incorrectas: ["LARUNA", "LANAMA"] },
+                { correcta: "CH'UXÑA", incorrectas: ["CHUXÑA", "CHUKNA"] },
+                { correcta: "JANQ'U LARAMA", incorrectas: ["JANKU LARANA", "HANQU LARAMA"] },
+                { correcta: "CHUCHI", incorrectas: ["CHHUCHI", "CHUJCHI"] },
+                { correcta: "UQI", incorrectas: ["UKI", "UKEY"] },
+                { correcta: "ARUMI", incorrectas: ["ARRUNI", "ABUNI"] },
+                { correcta: "CH'UMPHI", incorrectas: ["CHUMPI", "CHUPI"] },
+                { correcta: "CH'IXI", incorrectas: ["CHIXI", "CHIJI"] },
+                { correcta: "AYRAMPU", incorrectas: ["AYRAMPHU", "AIRAMPHU"] }
+            ]
+        };
+
+        // URLs de imágenes funcionales
+        const imageUrls = {
+            animales: {
+                "Vicuña": "https://drive.google.com/thumbnail?id=1dCvDJMiD6ouIcEoF7tDxGl-gYKg8-Ucn",
+                "Alpaca": "https://drive.google.com/thumbnail?id=1B7pd4kV-8ZDze8T0Hh7fQ9eUpz-qwmUG",
+                "Cóndor": "https://dreamy.tours/wp-content/uploads/2020/09/condor-andino-peru.jpg",
+                "Llama": "https://drive.google.com/thumbnail?id=1zXA0nOcPpR0tOI_YyiQUBkhYcBDoRMNy",
+                "Oso Andino": "https://www.google.com/imgres?q=oso%20andino&imgurl=https%3A%2F%2Fanimalesdelperu.com%2Fwp-content%2Fuploads%2F2018%2F11%2Foso-andino.jpg&imgrefurl=https%3A%2F%2Fanimalesdelperu.com%2Fsierra%2Fel-oso-andino%2F&docid=EltxG5-odhGL-M&tbnid=glwSp2DcleBkxM&vet=12ahUKEwjQ84SN5YCQAxUys5UCHRAhKMIQM3oECCMQAA..i&w=1602&h=1183&hcb=2&ved=2ahUKEwjQ84SN5YCQAxUys5UCHRAhKMIQM3oECCMQAA",
+                "Burro": "https://www.google.com/imgres?q=burro&imgurl=https%3A%2F%2Fwww.muyinteresante.com%2Fwp-content%2Fuploads%2Fsites%2F5%2F2023%2F07%2F08%2F64a923c73c015.jpeg&imgrefurl=https%3A%2F%2Fwww.muyinteresante.com%2Fcuriosidades%2F14802.html&docid=TrwEALQNpBVbpM&tbnid=k59MFZHZMrJ94M&vet=12ahUKEwjntais5YCQAxXSpZUCHbD3L0wQM3oECEgQAA..i&w=2996&h=2000&hcb=2&ved=2ahUKEwjntais5YCQAxXSpZUCHbD3L0wQM3oECEgQAA",
+                "Zorrino": "https://drive.google.com/thumbnail?id=1XSpPlHLA34dRsfqqY9-RiK2B3ye7jX1y",
+                "Zorro": "https://drive.google.com/thumbnail?id=1ZCdgqhWyYXXwbrY-fl0cl05noWvqIBcU",
+                "Flamenco": "https://drive.google.com/thumbnail?id=1twufmXRolS8KEoUbUy2HtZNwP6gQCNC9",
+                "Rana": "https://drive.google.com/thumbnail?id=1JMaC4fdBw9M4XEvgcjjKrOWrzFXGfhAG",
+                "Gato": "https://drive.google.com/thumbnail?id=1YAze_UAUjxUbJAkNUfD-570-71saIqNV",
+                "Gallina": "https://drive.google.com/thumbnail?id=1cgI6Ovx8asiTcDg3XNzUPH8FtO75iWzI",
+                "Mosca": "https://drive.google.com/thumbnail?id=1Bc3VC6V_uxgd8t9g6FyVIqW9QBJOJlpp",
+                "Oveja": "https://drive.google.com/thumbnail?id=1BENXi-0nMEfO3tfqmyFlqAA3PphkfPGs",
+                "Paloma": "https://drive.google.com/thumbnail?id=1l2T7r0u_XIIanp07kK-1NJYZpAo1p30E"
+            },
+            objetos: {
+                "Silla": "https://drive.google.com/thumbnail?id=1STZxaL9jZhNecaHvWpEq7Yjy5zm-7qZK",
+                "Computadora": "https://drive.google.com/thumbnail?id=1uCO7D5myJSicU_76Funcu5Sow6sVxHN_",
+                "Celular": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIA7rSXMjPyaTJqykP8Z1DrUzBrlhsiJhMiw&s",
+                "Libros": "https://drive.google.com/thumbnail?id=18Xi93_q4b2N1RH9UETyU3UCbdalhuKEg",
+                "Bolígrafo": "https://drive.google.com/thumbnail?id=10z-x1xz46kNyi6od7PcuhaVvcvLmFsU8",
+                "Cuchara": "https://drive.google.com/thumbnail?id=18lmT1kr1nppX19kL5Y8LjUmlXD_l81O7",
+                "Plato": "https://drive.google.com/thumbnail?id=1HsLQCxbMyXhM0FL4URaXSY08zTaybX56",
+                "Olla": "https://drive.google.com/thumbnail?id=1CyS-Qu1gCUJLK4fQNHKVjyU19bIbVzdD",
+                "Ventana": "https://drive.google.com/thumbnail?id=1A5KOo2O9JYm8HLJtx3QytGT5xEojVbtG",
+                "Puerta": "https://drive.google.com/thumbnail?id=11IDi29A5IfwjThwQcGignJclmH6zudpA",
+                "Diccionario": "https://drive.google.com/thumbnail?id=1LDl4pbszJKKqjUqHft8vWewtAsfu_vNv",
+                "Vaso": "https://drive.google.com/thumbnail?id=1PYl42u77ftLaZvel1hW5e1XCrKrE-Os0",
+                "Almohada": "https://drive.google.com/thumbnail?id=13oaFBN7I-JmtpxAlVo7YJ8zazDoy-BGu"
+            }
+        };
+
+        // Variables del juego
+        let currentGame = '';
+        let currentQuestion = 0;
+        let score = 0;
+        let questions = [];
+        let usedQuestions = [];
+
+        // Elementos DOM
+        const mainMenu = document.getElementById('mainMenu');
+        const gameContainer = document.getElementById('gameContainer');
+        const gameTitle = document.getElementById('gameTitle');
+        const scoreElement = document.getElementById('score');
+        const questionCountElement = document.getElementById('questionCount');
+        const imageContainer = document.getElementById('imageContainer');
+        const questionContainer = document.getElementById('questionContainer');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const feedback = document.getElementById('feedback');
+        const nextBtn = document.getElementById('nextBtn');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const finalScore = document.getElementById('finalScore');
+        const restartBtn = document.getElementById('restartBtn');
+        const homeBtn = document.getElementById('homeBtn');
+
+        // Event Listeners
+        document.querySelectorAll('.menu-btn').forEach(button => {
+            button.addEventListener('click', () => startGame(button.dataset.game));
+        });
+
+        nextBtn.addEventListener('click', nextQuestion);
+        restartBtn.addEventListener('click', restartGame);
+        homeBtn.addEventListener('click', goHome);
+
+        // Funciones del juego
+        function startGame(gameType) {
+            currentGame = gameType;
+            currentQuestion = 0;
+            score = 0;
+            usedQuestions = [];
+            
+            // Configurar título del juego
+            gameTitle.textContent = `Juego de ${capitalizeFirstLetter(gameType)}`;
+            
+            // Preparar preguntas
+            prepareQuestions(gameType);
+            
+            // Actualizar UI
+            scoreElement.textContent = score;
+            questionCountElement.textContent = `${currentQuestion + 1}/10`;
+            
+            // Mostrar juego y ocultar menú
+            mainMenu.style.display = 'none';
+            gameContainer.style.display = 'block';
+            resultsContainer.style.display = 'none';
+            
+            // Mostrar primera pregunta
+            showQuestion();
+        }
+
+        function prepareQuestions(gameType) {
+            questions = [];
+            const data = gameData[gameType];
+            
+            // Seleccionar 10 preguntas aleatorias
+            while (questions.length < 10 && questions.length < data.length) {
+                const randomIndex = Math.floor(Math.random() * data.length);
+                if (!usedQuestions.includes(randomIndex)) {
+                    questions.push(data[randomIndex]);
+                    usedQuestions.push(randomIndex);
+                }
+            }
+        }
+
+        function showQuestion() {
+            const questionData = questions[currentQuestion];
+            
+            // Limpiar contenedores
+            optionsContainer.innerHTML = '';
+            feedback.style.display = 'none';
+            nextBtn.style.display = 'none';
+            
+            // Configurar imagen (solo para animales y objetos)
+            imageContainer.innerHTML = '';
+            if (currentGame === 'animales' || currentGame === 'objetos') {
+                const img = document.createElement('img');
+                img.src = imageUrls[currentGame][questionData.es];
+                img.alt = questionData.es;
+                img.onerror = function() {
+                    // Si la imagen no carga, usar un servicio alternativo
+                    this.src = `https://picsum.photos/200/200?random=${Math.floor(Math.random() * 1000)}`;
+                };
+                imageContainer.appendChild(img);
+            } else {
+                // Para plantas y colores, ocultar el contenedor de imagen
+                imageContainer.style.display = 'none';
+            }
+            
+            // Configurar pregunta
+            if (currentGame === 'animales' || currentGame === 'objetos') {
+                questionContainer.textContent = `¿Cuál es la traducción correcta al Aymara de "${questionData.es}"?`;
+            } else {
+                questionContainer.textContent = `¿Cuál es la escritura correcta en Aymara?`;
+            }
+            
+            // Preparar opciones
+            let options = [];
+            
+            if (currentGame === 'animales' || currentGame === 'objetos') {
+                options = [questionData.correcta, questionData.incorrecta];
+            } else {
+                options = [questionData.correcta, ...questionData.incorrectas];
+            }
+            
+            // Mezclar opciones
+            options = shuffleArray(options);
+            
+            // Crear botones de opciones
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option-btn';
+                button.textContent = option;
+                button.addEventListener('click', () => checkAnswer(option, questionData.correcta));
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selected, correct) {
+            const optionButtons = document.querySelectorAll('.option-btn');
+            
+            // Deshabilitar todos los botones
+            optionButtons.forEach(button => {
+                button.disabled = true;
+            });
+            
+            // Marcar respuesta correcta e incorrecta
+            optionButtons.forEach(button => {
+                if (button.textContent === correct) {
+                    button.classList.add('correct');
+                } else if (button.textContent === selected && selected !== correct) {
+                    button.classList.add('incorrect');
+                }
+            });
+            
+            // Mostrar feedback
+            if (selected === correct) {
+                feedback.textContent = '¡Correcto!';
+                feedback.className = 'feedback correct';
+                score++;
+                scoreElement.textContent = score;
+            } else {
+                feedback.textContent = `Incorrecto. La respuesta correcta es: ${correct}`;
+                feedback.className = 'feedback incorrect';
+            }
+            
+            feedback.style.display = 'block';
+            nextBtn.style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            
+            if (currentQuestion < 10) {
+                questionCountElement.textContent = `${currentQuestion + 1}/10`;
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            gameContainer.querySelector('.game-content').style.display = 'none';
+            resultsContainer.style.display = 'block';
+            finalScore.textContent = `Puntuación final: ${score}/10`;
+        }
+
+        function restartGame() {
+            startGame(currentGame);
+        }
+
+        function goHome() {
+            gameContainer.style.display = 'none';
+            mainMenu.style.display = 'flex';
+        }
+
+        // Utilidades
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+    </script>
+</body>
+</html>
